@@ -77,9 +77,9 @@ export default async function HomePage() {
 
         <section className="container-shell space-y-8 py-8 sm:py-12">
           <SectionHeading eyebrow="Featured projects" title="Selected work with calm visual rhythm" description="Hover-friendly cards that frame each project like a polished case study." />
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {projects.map((project) => (
-              <Reveal key={project.id}>
+              <Reveal key={project.id} className="h-full">
                 <ProjectCard project={project} />
               </Reveal>
             ))}

@@ -161,11 +161,12 @@ export async function getAllCertificates() {
 
 export async function getAdminStats() {
   try {
-    const [projects, poems, docs, certificates, messages] = await Promise.all([
+    const [projects, poems, docs, certificates, resumes, messages] = await Promise.all([
       prisma.project.count(),
       prisma.poem.count(),
       prisma.documentation.count(),
       prisma.certificate.count(),
+      prisma.resume.count(),
       prisma.message.count()
     ]);
 
@@ -174,6 +175,7 @@ export async function getAdminStats() {
       poems,
       docs,
       certificates,
+      resumes,
       messages
     };
   } catch {
@@ -182,8 +184,22 @@ export async function getAdminStats() {
       poems: 0,
       docs: 0,
       certificates: 0,
+      resumes: 0,
       messages: 0
     };
+  }
+}
+
+export async function getLatestResume() {
+  try {
+    const activeResume = await prisma.resume.findFirst({ where: { active: true }, orderBy: { updatedAt: 'desc' } });
+    if (activeResume) {
+      return activeResume;
+    }
+
+    return await prisma.resume.findFirst({ orderBy: { createdAt: 'desc' } });
+  } catch {
+    return null;
   }
 }
 

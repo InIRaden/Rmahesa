@@ -8,9 +8,14 @@ type MediaUploadFieldProps = {
   value: string;
   onChange: (value: string) => void;
   folder?: string;
+  accept?: string;
+  buttonLabel?: string;
+  placeholder?: string;
+  // If true, do not upload to Cloudinary; always convert file to a data URL and return it.
+  inlineOnly?: boolean;
 };
 
-export function MediaUploadField({ label, value, onChange, folder = 'rmahesa' }: MediaUploadFieldProps) {
+export function MediaUploadField({ label, value, onChange, folder = 'rmahesa', accept = 'image/*', buttonLabel = 'Upload image', placeholder, inlineOnly = false }: MediaUploadFieldProps) {
   const [status, setStatus] = useState('');
   const [pending, setPending] = useState(false);
 
@@ -32,11 +37,19 @@ export function MediaUploadField({ label, value, onChange, folder = 'rmahesa' }:
     setPending(true);
     setStatus('Uploading...');
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', folder);
-
     try {
+      // If inlineOnly is set, skip remote upload and just convert to data URL
+      if (inlineOnly) {
+        const dataUrl = await fileToDataUrl(file);
+        onChange(dataUrl);
+        setStatus('Saved as data URL.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', folder);
+
       const response = await fetch('/api/admin/media/upload', {
         method: 'POST',
         body: formData
@@ -57,7 +70,7 @@ export function MediaUploadField({ label, value, onChange, folder = 'rmahesa' }:
 
       onChange(result.url as string);
       setStatus('Uploaded.');
-    } catch {
+    } catch (e) {
       setStatus('Upload failed.');
     } finally {
       setPending(false);
@@ -72,14 +85,14 @@ export function MediaUploadField({ label, value, onChange, folder = 'rmahesa' }:
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="Paste a URL or upload an image"
+          placeholder={placeholder ?? 'Paste a URL or upload a file'}
           className="w-full bg-transparent outline-none placeholder:text-ink/35"
         />
         <div className="flex items-center justify-between gap-3">
           <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-black/10 px-3 py-2 text-xs font-medium text-ink transition hover:bg-white dark:border-white/10 dark:text-white dark:hover:bg-white/5">
             <ImageUp className="h-4 w-4" />
-            <span>{pending ? 'Uploading...' : 'Upload image'}</span>
-            <input type="file" accept="image/*" onChange={handleUpload} className="hidden" />
+            <span>{pending ? 'Uploading...' : buttonLabel}</span>
+            <input type="file" accept={accept} onChange={handleUpload} className="hidden" />
           </label>
           {status ? <span className="text-xs text-ink/50 dark:text-white/50">{status}</span> : null}
         </div>

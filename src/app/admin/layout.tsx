@@ -9,6 +9,7 @@ const adminLinks = [
   { label: 'Poems', href: '/admin/poems' },
   { label: 'Journey', href: '/admin/documentations' },
   { label: 'Certificates', href: '/admin/certificates' },
+  { label: 'CVs', href: '/admin/resumes' },
   { label: 'Messages', href: '/admin/messages' }
 ];
 

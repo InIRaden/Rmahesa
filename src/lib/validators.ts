@@ -88,6 +88,19 @@ export const certificateSchema = z.object({
   published: z.boolean()
 });
 
+export const resumeSchema = z
+  .object({
+    title: z.string().min(1),
+    // Accept either a hosted URL or an inline data URL (base64).
+    fileUrl: z.string().optional().or(z.literal('')),
+    fileData: z.string().optional().or(z.literal('')),
+    fileName: z.string().optional().or(z.literal('')),
+    active: z.boolean()
+  })
+  .refine((v) => Boolean(v.fileUrl || v.fileData), {
+    message: 'Either fileUrl or fileData must be provided'
+  });
+
 export const contactSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
@@ -105,7 +118,8 @@ export const contentSchemaByResource = {
   projects: projectSchema,
   poems: poemSchema,
   documentations: documentationSchema,
-  certificates: certificateSchema
+  certificates: certificateSchema,
+  resumes: resumeSchema
 } as const;
 
 export type ContentResource = keyof typeof contentSchemaByResource;

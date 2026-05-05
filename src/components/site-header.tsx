@@ -32,6 +32,9 @@ export function SiteHeader({ title, navItems, logoUrl }: { title: string; navIte
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
+          <a href="/api/cv" download className="hidden rounded-full border border-black/10 px-4 py-2 text-sm font-medium text-ink transition hover:-translate-y-0.5 hover:bg-white dark:border-white/10 dark:text-white dark:hover:bg-white/5 md:inline-flex">
+            Download CV
+          </a>
           <Link href="/contact" className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:-translate-y-0.5 hover:shadow-soft dark:bg-paper dark:text-ink">
             Contact
           </Link>

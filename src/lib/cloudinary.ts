@@ -8,12 +8,12 @@ export function cloudinaryConfigured() {
   return Boolean(cloudName && apiKey && apiSecret);
 }
 
-export function buildCloudinaryUploadUrl() {
+export function buildCloudinaryUploadUrl(resourceType: 'image' | 'raw' = 'image') {
   if (!cloudinaryConfigured()) {
     throw new Error('Cloudinary is not configured.');
   }
 
-  return `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+  return `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`;
 }
 
 export function signCloudinaryRequest(params: Record<string, string>) {
@@ -26,7 +26,7 @@ export function signCloudinaryRequest(params: Record<string, string>) {
   return crypto.createHash('sha1').update(`${serialized}${apiSecret}`).digest('hex');
 }
 
-export async function uploadToCloudinary(file: File, folder = 'rmahesa') {
+export async function uploadToCloudinary(file: File, folder = 'rmahesa', resourceType: 'image' | 'raw' = 'image') {
   if (!cloudinaryConfigured()) {
     throw new Error('Cloudinary is not configured.');
   }
@@ -51,7 +51,7 @@ export async function uploadToCloudinary(file: File, folder = 'rmahesa') {
     formData.append('upload_preset', uploadPreset);
   }
 
-  const response = await fetch(buildCloudinaryUploadUrl(), {
+  const response = await fetch(buildCloudinaryUploadUrl(resourceType), {
     method: 'POST',
     body: formData
   });

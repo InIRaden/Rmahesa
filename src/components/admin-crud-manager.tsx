@@ -3,13 +3,14 @@
 import { type ChangeEvent, type FormEvent, useState } from 'react';
 import { MediaUploadField } from '@/components/media-upload-field';
 
-type FieldType = 'text' | 'textarea' | 'url' | 'number' | 'checkbox' | 'date' | 'array';
+type FieldType = 'text' | 'textarea' | 'url' | 'file' | 'number' | 'checkbox' | 'date' | 'array';
 
 type FieldConfig = {
   name: string;
   label: string;
   type: FieldType;
   placeholder?: string;
+  inlineOnly?: boolean;
 };
 
 type AdminItem = {
@@ -217,9 +218,10 @@ export function AdminCrudManager({
 
               const inputType = field.type === 'array' ? 'text' : field.type;
               const fieldName = field.name.toLowerCase();
-              const useUpload = field.type === 'url' && (fieldName.includes('image') || fieldName.includes('logo') || fieldName.includes('favicon'));
+              const useImageUpload = field.type === 'url' && (fieldName.includes('image') || fieldName.includes('logo') || fieldName.includes('favicon'));
+              const useFileUpload = field.type === 'file';
 
-              return useUpload ? (
+              return useImageUpload || useFileUpload ? (
                 <div key={field.name} className="space-y-2">
                   <span className="text-xs font-semibold uppercase tracking-[0.2em] text-clay">{field.label}</span>
                   <MediaUploadField
@@ -227,6 +229,10 @@ export function AdminCrudManager({
                     value={String(form[field.name] ?? '')}
                     onChange={(value) => setForm((current) => ({ ...current, [field.name]: value }))}
                     folder={`rmahesa/${resource}`}
+                    accept={useFileUpload ? '.pdf,application/pdf' : 'image/*'}
+                    buttonLabel={useFileUpload ? 'Upload CV' : 'Upload image'}
+                    placeholder={useFileUpload ? 'Paste a URL or upload a PDF' : 'Paste a URL or upload an image'}
+                    inlineOnly={Boolean(field.inlineOnly)}
                   />
                 </div>
               ) : (

@@ -17,9 +17,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    const url = await uploadToCloudinary(file, folder);
+    const resourceType = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf') ? 'raw' : 'image';
+    const url = await uploadToCloudinary(file, folder, resourceType);
     return NextResponse.json({ url });
   } catch {
-    return NextResponse.json({ error: 'Unable to upload image.' }, { status: 500 });
+    return NextResponse.json({ error: 'Unable to upload file.' }, { status: 500 });
   }
 }

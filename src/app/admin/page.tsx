@@ -7,6 +7,7 @@ const shortcuts = [
   { label: 'Poems', href: '/admin/poems' },
   { label: 'Journey', href: '/admin/documentations' },
   { label: 'Certificates', href: '/admin/certificates' },
+  { label: 'CVs', href: '/admin/resumes' },
   { label: 'Messages', href: '/admin/messages' }
 ];
 
@@ -18,6 +19,7 @@ export default async function AdminDashboardPage() {
     { label: 'Poems', value: stats.poems },
     { label: 'Journey entries', value: stats.docs },
     { label: 'Certificates', value: stats.certificates },
+    { label: 'CVs', value: stats.resumes },
     { label: 'Messages', value: stats.messages }
   ];
 

@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma';
-import { certificateSchema, contentSchemaByResource, documentationSchema, loginSchema, poemSchema, projectSchema, settingsSchema } from '@/lib/validators';
+import { certificateSchema, contentSchemaByResource, documentationSchema, loginSchema, poemSchema, projectSchema, resumeSchema, settingsSchema } from '@/lib/validators';
 import { slugify } from '@/lib/slugs';
 
 export type AdminResource = keyof typeof contentSchemaByResource | 'messages';
 
 export function isAdminResource(resource: string): resource is AdminResource {
-  return ['settings', 'projects', 'poems', 'documentations', 'certificates', 'messages'].includes(resource);
+  return ['settings', 'projects', 'poems', 'documentations', 'certificates', 'resumes', 'messages'].includes(resource);
 }
 
 function parseArrayField(value: unknown) {
@@ -34,6 +34,8 @@ export async function listResource(resource: AdminResource) {
       return prisma.documentation.findMany({ orderBy: { date: 'desc' } });
     case 'certificates':
       return prisma.certificate.findMany({ orderBy: { date: 'desc' } });
+    case 'resumes':
+      return prisma.resume.findMany({ orderBy: [{ active: 'desc' }, { createdAt: 'desc' }] });
     case 'messages':
       return prisma.message.findMany({ orderBy: { createdAt: 'desc' } });
   }
@@ -99,6 +101,30 @@ export async function createResource(resource: AdminResource, body: unknown) {
           slug: parsed.slug || slugify(parsed.title),
           imageUrl: parsed.imageUrl || null,
           date: new Date(parsed.date)
+        }
+      });
+    }
+    case 'resumes': {
+      const parsed = resumeSchema.parse(body);
+      if (parsed.active) {
+        await prisma.resume.updateMany({ where: { active: true }, data: { active: false } });
+      }
+
+      // Normalize: if fileUrl contains a data: URL, store it in fileData instead
+      let fileUrl: string | null = parsed.fileUrl || null;
+      let fileData: string | null = parsed.fileData || null;
+      if (fileUrl && fileUrl.startsWith('data:')) {
+        fileData = fileUrl;
+        fileUrl = null;
+      }
+
+      return prisma.resume.create({
+        data: {
+          title: parsed.title,
+          fileUrl,
+          fileData,
+          fileName: parsed.fileName || null,
+          active: parsed.active
         }
       });
     }
@@ -174,6 +200,31 @@ export async function updateResource(resource: AdminResource, id: string, body: 
         }
       });
     }
+    case 'resumes': {
+      const parsed = resumeSchema.parse(body);
+      if (parsed.active) {
+        await prisma.resume.updateMany({ where: { active: true, id: { not: id } }, data: { active: false } });
+      }
+
+      // Normalize data URL into fileData
+      let fileUrl: string | null = parsed.fileUrl || null;
+      let fileData: string | null = parsed.fileData || null;
+      if (fileUrl && fileUrl.startsWith('data:')) {
+        fileData = fileUrl;
+        fileUrl = null;
+      }
+
+      return prisma.resume.update({
+        where: { id },
+        data: {
+          title: parsed.title,
+          fileUrl,
+          fileData,
+          fileName: parsed.fileName || null,
+          active: parsed.active
+        }
+      });
+    }
     case 'messages':
       throw new Error('Messages cannot be updated through the admin API.');
   }
@@ -191,6 +242,8 @@ export async function deleteResource(resource: AdminResource, id: string) {
       return prisma.documentation.delete({ where: { id } });
     case 'certificates':
       return prisma.certificate.delete({ where: { id } });
+    case 'resumes':
+      return prisma.resume.delete({ where: { id } });
     case 'messages':
       return prisma.message.delete({ where: { id } });
   }
