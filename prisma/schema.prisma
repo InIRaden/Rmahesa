@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         UserRole  @default(ADMIN)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Settings {
+  id                Int      @id @default(1)
+  siteTitle         String   @default("Rmahesa")
+  siteDescription   String   @default("A calm portfolio for a developer who writes poetry and documents life.")
+  logoUrl           String?
+  faviconUrl        String?
+  footerText        String   @default("A digital journal of code, poems, and moments.")
+  themeColor        String   @default("#171717")
+  socialLinks       String   @default("[]")
+  navItems          String   @default("[]")
+  heroHeadline      String   @default("I build digital experiences and capture moments in words")
+  heroSubheadline   String   @default("A web developer and poetry writer shaping quiet, expressive experiences for the web.")
+  heroProfileImage  String?
+  heroPrimaryLabel  String   @default("Explore Portfolio")
+  heroPrimaryHref   String   @default("/portfolio")
+  heroSecondaryLabel String  @default("Read My Poetry")
+  heroSecondaryHref String   @default("/poetry")
+  aboutTitle        String   @default("About")
+  aboutSummary      String   @default("I write code with structure, but I live by feeling. My work sits at the intersection of craft, memory, and meaning.")
+  aboutBody         String   @default("I build interfaces that feel calm, intentional, and human. Outside of development, I write poetry and document the small, meaningful moments that shape a life.")
+  aboutImageUrl     String?
+  seoTitle          String?
+  seoDescription    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  imageUrl    String?
+  techStack   String   @default("[]")
+  githubUrl   String?
+  liveUrl     String?
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Poem {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String
+  excerpt     String?
+  category    String?
+  published   Boolean  @default(true)
+  poemDate    DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Documentation {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  imageUrl    String?
+  date        DateTime
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Certificate {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  issuer      String
+  imageUrl    String?
+  date        DateTime
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  subject     String
+  content     String
+  status      String   @default("unread")
+  createdAt   DateTime @default(now())
+}

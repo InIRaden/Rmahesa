@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^npm create next-app@latest \\. --ts --tailwind --eslint --app --src-dir --use-npm --import-alias \"@/\\*\" --yes$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
