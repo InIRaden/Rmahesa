@@ -70,7 +70,7 @@ export function MediaUploadField({ label, value, onChange, folder = 'rmahesa', a
 
       onChange(result.url as string);
       setStatus('Uploaded.');
-    } catch (e) {
+    } catch {
       setStatus('Upload failed.');
     } finally {
       setPending(false);

@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAdminSessionFromRequest } from '@/lib/auth';
 
-export async function POST(request: Request) {
-  const session = await getAdminSessionFromRequest(request as any);
+export async function POST(request: NextRequest) {
+  const session = await getAdminSessionFromRequest(request);
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -27,8 +27,9 @@ export async function POST(request: Request) {
 
       await prisma.resume.update({ where: { id: r.id }, data: { fileData: dataUrl, fileUrl: null } });
       results.push({ id: r.id, ok: true });
-    } catch (err: any) {
-      results.push({ id: r.id, ok: false, error: String(err?.message ?? err) });
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      results.push({ id: r.id, ok: false, error: errorMsg });
     }
   }
 

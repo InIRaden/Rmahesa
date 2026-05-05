@@ -31,7 +31,7 @@ export async function GET() {
       headers.set('Content-Type', mime);
       headers.set('Content-Disposition', `attachment; filename="${safeFilename(resume.fileName || `${resume.title}.pdf`)}"`);
       return new Response(buffer, { status: 200, headers });
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: 'Unable to decode stored CV data.' }, { status: 500 });
     }
   }
@@ -51,7 +51,7 @@ export async function GET() {
       headers.set('Content-Type', mime);
       headers.set('Content-Disposition', `attachment; filename="${safeFilename(resume.fileName || `${resume.title}.pdf`)}"`);
       return new Response(buffer, { status: 200, headers });
-    } catch (err) {
+    } catch {
       return NextResponse.json({ error: 'Unable to decode stored CV data.' }, { status: 500 });
     }
   }
@@ -60,7 +60,7 @@ export async function GET() {
   if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
     try {
       return NextResponse.redirect(fileUrl);
-    } catch (err) {
+    } catch {
       // fallback: attempt to fetch and stream
     }
   }
@@ -77,7 +77,7 @@ export async function GET() {
     headers.set('Content-Disposition', `attachment; filename="${safeFilename(resume.fileName || `${resume.title}.pdf`)}"`);
 
     return new Response(response.body, { status: 200, headers });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Unable to fetch the CV file.' }, { status: 502 });
   }
 }
