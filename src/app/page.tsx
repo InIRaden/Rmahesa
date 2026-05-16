@@ -63,14 +63,23 @@ export default async function HomePage() {
         <section className="container-shell space-y-8 py-8 sm:py-12">
           <SectionHeading eyebrow="About preview" title="A developer identity with a poetic pulse" description="A short story of structure and tenderness, shown in the first glance of the site." />
           <Reveal>
-            <div className="mx-auto max-w-2xl space-y-5 rounded-[2rem] border border-black/8 bg-white/70 p-8 shadow-soft dark:border-white/10 dark:bg-white/5">
-              <p className="text-center text-lg leading-8 text-ink/75 dark:text-white/70">{settings.aboutSummary}</p>
-              <p className="text-center text-sm leading-7 text-ink/65 dark:text-white/60">{settings.aboutBody}</p>
-              <div className="flex justify-center">
-                <Link href="/about" className="inline-flex text-sm font-medium text-ink underline decoration-clay/40 underline-offset-4 dark:text-white">
-                  Read More
-                </Link>
+            <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+              <div className="space-y-5 rounded-[2rem] border border-black/8 bg-white/70 p-8 shadow-soft dark:border-white/10 dark:bg-white/5">
+                <div className="space-y-4">
+                  <p className="font-serif text-3xl leading-tight text-ink dark:text-white sm:text-4xl">{settings.aboutSummary}</p>
+                  <p className="text-sm leading-7 text-ink/65 dark:text-white/60">{settings.aboutBody}</p>
+                </div>
+                <div>
+                  <Link href="/about" className="inline-flex text-sm font-medium text-ink underline decoration-clay/40 underline-offset-4 dark:text-white">
+                    Read More
+                  </Link>
+                </div>
               </div>
+              {settings.aboutImageUrl ? (
+                <div className="relative min-h-[320px] overflow-hidden rounded-[2rem] border border-black/8 bg-cream shadow-soft dark:border-white/10 dark:bg-white/5 sm:min-h-[380px] lg:min-h-full">
+                  <Image src={settings.aboutImageUrl} alt="About preview image" fill className="object-cover" unoptimized sizes="(min-width: 1024px) 45vw, 100vw" />
+                </div>
+              ) : null}
             </div>
           </Reveal>
         </section>
